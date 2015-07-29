@@ -1,0 +1,104 @@
+.htw-helper-dialog
+{
+	position: absolute;
+	background: #34495e;
+	right: 0px;
+	top:20%;
+	min-width: 120px;
+	width: auto;
+	padding: 0 1px 1px 0px;
+}
+
+
+.htw-helper-dialog-head
+{
+	 background:  #ff0000;
+	 height: 22px;
+	 width: 100%;
+	 position: absolute;
+	 color: #fff;
+
+}
+
+.htw-helper-dialog > .htw-helper-dialog-body
+{
+	margin-top:30px;
+}
+
+.htw-helper-dialog > .htw-helper-dialog-body >ul >li
+{
+	list-style: none;
+	color: #fff;
+	border-color: #fff;
+	border-bottom:1px solid;
+
+}
+
+.dialog-null
+{
+	border-bottom: 0px !important;	
+}
+
+.htw-action-box
+{
+	position:absolute;
+	z-index: 999;
+	margin:20px -10px 15px;
+	background: #fff;
+	color: #2c3e50;
+	display:inline;
+	max-width:280px;
+	min-width:200px;
+	font-size:15px;
+	line-height:12px;
+	direction:ltr;
+	box-shadow:5px 5px 5px #888888;
+	border-style: solid;
+	border-color: #2ecc71;
+
+}
+
+.htw-action-message
+{
+	background: #2ecc71;
+	color: #fff;
+	position:relative;
+	overflow:hidden;
+	text-align:left;
+	word-wrap:break-word;
+	padding-bottom: 30px;
+	margin-top: 5px;
+	font-weight: bolder;
+
+	
+}
+
+.htw-action-title
+{
+	position: relative;
+	word-wrap:break-word;
+	margin-top: 10px;	
+    margin: 5px;
+}
+
+.htw-action-header
+{
+	position: relative;
+	text-align: center;
+	margin: 10px;
+	font-size: 15px;
+	text-transform: uppercase;
+	text-decoration: underline;
+	font-weight: bolder;
+	margin-bottom: 20px;
+
+}
+
+.htw-triangle
+{
+	width: 0; 
+	height: 0; 
+	border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+	border-bottom: 5px solid #2ecc71;
+}
