@@ -1,3 +1,3 @@
 # howToWaysSails
 
-a [Sails](http://sailsjs.org) application
+An open source alternative to Walk-me with a developer perspective.
