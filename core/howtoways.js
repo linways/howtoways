@@ -2,34 +2,21 @@ $(document).ready(function()
 {
 	$(".htw-helper-dialog").hide();	
 
-	/*window.onpopstate = function() 
-	{
-  alert("pop!");
-
-	}*/
-
-	 /*if (window.history && window.history.pushState) 
-	 {
-	    window.history.pushState('forward', null, './#forward');
-	    $(window).on('popstate', function() {
-	      eraseCookie("cookie_next_actionID");
-	    });
-  	}*/			
-
-	var cookie_current_actionID=read_cookie("cookie_next_actionID");
+	var cookie_current_flow_id=read_cookie("flow_id");
+	var prev_flowstep_id = "null";
 
 	/****************************************************************************
-				Check if cookie exists cookie_flowID, cookie_actionID in the url
+				Check if cookie exists cookie_flow_id in the url
 	****************************************************************************/
-	if(cookie_current_actionID)
+	if(cookie_current_flow_id)
 		{
-		 	htw_show_action_description(cookie_current_actionID);	
+		 	htw_show_action_description(cookie_current_flow_id,prev_flowstep_id);	
 		}
 
 	else
 		{
 	/**************************************************************
-		Check for cookie_flowID, cookie_actionID in the url
+		Check for cookie_flowID, cookie_flow_id in the url
 	***************************************************************/
 			var urlParams;
 			(window.onpopstate = function () 
@@ -45,9 +32,9 @@ $(document).ready(function()
 			       urlParams[decode(match[1])] = decode(match[2]);
 			})();
 
-			if(urlParams["cookie_actionID"])
+			if(urlParams["cookie_flow_id"])
 			{
-				htw_show_action_description(urlParams["cookie_actionID"],function()
+				htw_show_action_description(urlParams["cookie_flow_id"],function()
 					{
 						alert("exec");
 						htw_enable();
@@ -56,10 +43,6 @@ $(document).ready(function()
 			}
 
 		}
-
-
-
-
  
 });
 
@@ -72,7 +55,7 @@ function createCookie(name,value,days)
 		var expires = "; expires="+date.toUTCString();
 	}
 	else var expires = "";
-	document.cookie = name+"="+value+expires+ "; path=/";
+	document.cookie = name+"="+value+expires+"; path=/";
 }
 
 
@@ -91,11 +74,9 @@ function read_cookie(cookie_name)
 }
 
 
-function eraseCookie(name) 
-{
-	createCookie(name,"",-1);
+function eraseCookie(name) {
+    document.cookie = name + '=; Max-Age=0'
 }
-
 
 function htw_enable(cookie_flowID)
 {
@@ -158,14 +139,7 @@ function htw_show_flow()
 							$(".htw-helper-dialog-body ul li").click(function()
 							{
 								var action_ID=1;
-								/*document.cookie="username=;"
-								document.cookie="username="+this.id;
-
-								var cookie=document.cookie;
-								console.log(cookie);*/
-
-								/*var cookie_flowID=document.cookie(cookie_flowID);
-								console.log(cookie_flowID);*/
+								
 								htw_show_action_description(this.id,action_ID,data);									
 
 							});
@@ -176,44 +150,182 @@ function htw_show_flow()
 					{
 						alert("error");
 					}
-				 }
+				}
 		});
 }
 
-function htw_show_action_description(actionID)
+
+
+function htw_show_action_description(flow_id,prev_flowstep_id)
 {
 	$.ajax({
-			  url 	   :'http://localhost:1337/flowstep/'+actionID,
+			  url 	   :'how-to-ways/get-flow-step/'+ flow_id +'/'+prev_flowstep_id+'/',
 			  type 	   :'GET',
 			  dataType :'json',
 			  success  :function(data)
 			  			{
 			  				var currentElement='#'+data.identifier;
 			  				if($(currentElement).length>0)
-			  				{	
+			  				{
+			  					if(countTimer) 
+			  					{
+			  						clearInterval(countTimer);
+			  					}	
+								$(currentElement).css("border","3px solid #FF8000");
+
+								// var htw_html="<div class='htw-action-box'><div class='htw-triangle'></div><div class='htw-action-title'><span>Title : </span>"+data.title+"</div><div class='htw-action-message'><span>Description</span> : "+data.description+"</div></div>";
+								var htw_html_both="<div class='htw-action-box-both'><div class='htw-action-header'>How to ways</div><div class='htw-action-title'><span>Title : </span>"+data.title+"</div><div class='htw-action-message'><span>Description</span> : "+data.description+"</br></div></div>";
+
+								var htw_html_right="<div class='htw-action-box-right'><div class='htw-action-header'>How to ways</div><div class='htw-action-title'><span>Title : </span>"+data.title+"</div><div class='htw-action-message'><span>Description</span> : "+data.description+"</br></div></div>";
 								
-								$(currentElement).css("border","3px solid #456");
-								var htw_html="<div class='htw-action-box'><div class='htw-triangle'></div><div class='htw-action-title'><span>Title : </span>"+data.title+"</div><div class='htw-action-message'><span>Description</span> : "+data.description+"</div></div>";
+								var htw_html_bottom="<div id='htw_html_bottom' class='htw-action-box-bottom'><div class='htw-action-header'>How to ways</div><div class='htw-action-title'><span>Title : </span>"+data.title+"</div><div class='htw-action-message'><span>Description</span> : "+data.description+"</br></div></div>";
 
-								/*var htw_html="<div class='htw-action-box'><div class='htw-action-header'>help</div><div class='htw-action-title'><span>Title : </span>"+data.title+"</div><div class='htw-action-message'><span>Description</span> : "+data.description+"</div></div>";*/
-
-								$(currentElement).after(htw_html);
-
+								var htw_html="<div class='htw-action-box'><div class='htw-action-header'>How to ways</div><div class='htw-action-title'><span>Title : </span>"+data.title+"</div><div class='htw-action-message'><span>Description</span> : "+data.description+"</br></div></div>";
+								var elementPositionFlag = 0;
+								var offset = $(currentElement).offset();
+								//alert(document.domain);
+								var windowHeight = $(window).height();
+								var windowWidth = $(window).width();
+								var bottom = windowHeight - offset.top; 
+								var right =  windowWidth - offset.left;  
+								//alert("element width "+ bottom);
+								
+								if(right < 600 && bottom < 200)
+								{
+									elementPositionFlag = 1;
+									$(currentElement).before(htw_html_bottom);
+									//$("#htw_html_bottom").css({ 'margin-top' : spaceForHtwString});
+									//alert(spaceForHtwString);	
+								}
+								else if (right < 600) 
+								{
+									elementPositionFlag = 1;
+									$(currentElement).before(htw_html_right);
+									//alert(spaceForHtwString);
+								}
+								else if(bottom < 200) 
+								{
+									elementPositionFlag = 1;
+									$(currentElement).before(htw_html_bottom);
+									//$("#htw_html_bottom").css({ 'margin-bottom' : spaceForHtwString});
+									//alert(spaceForHtwString);
+								}
+								else
+								{
+									$(currentElement).after(htw_html);
+								}
+								$('#triggerCurrentElement').click(function()
+									{
+										alert(currentElement);
+										$(currentElement)[0].click();
+										// $(currentElement).trigger( "click" );
+									});
 								$(currentElement).click(function()
 								{
 									$(this).css("border","");
-									$(this).next().hide();
-									$(this).off('click');	
-
-									actionID= data.next_step_id;
-									createCookie("cookie_next_actionID",actionID,"");
-
-									if(actionID!="null")
-										htw_show_action_description(actionID);
-
+									if (elementPositionFlag == 1) 
+									{
+										$(this).prev().hide();
+									}
 									else
-										eraseCookie("cookie_next_actionID");
+									{
+										$(this).next().hide();
+									}
+									$(this).off('click');	
+									prev_flowstep_id = data.id;
+									createCookie("prev_flowstep_id",prev_flowstep_id,"");
+									prev_flowstep_id = read_cookie("prev_flowstep_id");
+									if(flow_id!="null")
+										htw_show_action_description(flow_id,prev_flowstep_id);
+									else
+										eraseCookie("prev_flowstep_id");
+										eraseCookie("flow_id");
 								});
+			  				}
+			  				else
+			  				{
+			  					
+			  					var countTimer = setInterval(function(){ 
+			  						
+			  						if($(currentElement).length>0) 
+			  						{
+			  							clearInterval(countTimer);
+			  							$(currentElement).css("border","3px solid #FF8000");
+										// var htw_html="<div class='htw-action-box'><div class='htw-triangle'></div><div class='htw-action-title'><span>Title : </span>"+data.title+"</div><div class='htw-action-message'><span>Description</span> : "+data.description+"</div></div>";
+										var htw_html_both="<div class='htw-action-box-both'><div class='htw-action-header'>How to ways</div><div class='htw-action-title'><span>Title : </span>"+data.title+"</div><div class='htw-action-message'><span>Description</span> : "+data.description+"</div></div>";
+
+										var htw_html_right="<div class='htw-action-box-right'><div class='htw-action-header'>How to ways</div><div class='htw-action-title'><span>Title : </span>"+data.title+"</div><div class='htw-action-message'><span>Description</span> : "+data.description+"</div></div>";
+										
+										var htw_html_bottom="<div id='htw_html_bottom' class='htw-action-box-bottom'><div class='htw-action-header'>How to ways</div><div class='htw-action-title'><span>Title : </span>"+data.title+"</div><div class='htw-action-message'><span>Description</span> : "+data.description+"</div></div>";
+
+										var htw_html="<div class='htw-action-box'><div class='htw-action-header'>How to ways</div><div class='htw-action-title'><span>Title : </span>"+data.title+"</div><div class='htw-action-message'><span>Description</span> : "+data.description+"</div></div>";
+										var elementPositionFlag = 0;
+										var offset = $(currentElement).offset();
+										//alert(document.domain);
+										var windowHeight = $(window).height();
+										var windowWidth = $(window).width();
+										var bottom = windowHeight - offset.top; 
+										var right =  windowWidth - offset.left;  
+										//alert("element width "+ bottom);
+										
+										if(right < 600 && bottom < 200)
+										{
+											elementPositionFlag = 1;
+											$(currentElement).before(htw_html_bottom);
+											//$("#htw_html_bottom").css({ 'margin-top' : spaceForHtwString});
+											//alert(spaceForHtwString);	
+										}
+										else if (right < 600) 
+										{
+											elementPositionFlag = 1;
+											$(currentElement).before(htw_html_right);
+											//alert(spaceForHtwString);
+										}
+										else if(bottom < 200) 
+										{
+											elementPositionFlag = 1;
+											$(currentElement).before(htw_html_bottom);
+											//$("#htw_html_bottom").css({ 'margin-bottom' : spaceForHtwString});
+											//alert(spaceForHtwString);
+										}
+										else
+										{
+											$(currentElement).after(htw_html);
+										}
+										
+										$(currentElement).click(function()
+										{
+											$(this).css("border","");
+											if (elementPositionFlag == 1) 
+											{
+												$(this).prev().hide();
+											}
+											else
+											{
+												$(this).next().hide();
+											}
+											$(this).off('click');	
+											prev_flowstep_id = data.id;
+											createCookie("prev_flowstep_id",prev_flowstep_id,"");
+											prev_flowstep_id = read_cookie("prev_flowstep_id");
+											if(flow_id!="null")
+											{
+												htw_show_action_description(flow_id,prev_flowstep_id);
+											}
+											else
+											{
+												eraseCookie("prev_flowstep_id");
+												eraseCookie("flow_id");
+											}
+												
+										});
+			  						}
+			  						else
+			  						{
+
+			  						}
+
+			  					}, 3000);
 			  				}
 			  			}
 		  });

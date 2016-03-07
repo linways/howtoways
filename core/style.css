@@ -42,7 +42,7 @@
 .htw-action-box
 {
 	position:absolute;
-	z-index: 999;
+	z-index: 9999;
 	margin:20px -10px 15px;
 	background: #fff;
 	color: #2c3e50;
@@ -54,13 +54,68 @@
 	direction:ltr;
 	box-shadow:5px 5px 5px #888888;
 	border-style: solid;
-	border-color: #2ecc71;
+	border-color: #008080;
+
+}
+.htw-action-box-right
+{
+	position:absolute;
+	z-index: 9999;
+	margin:70px -10px 15px;
+	background: #fff;
+	color: #2c3e50;
+	display:inline;
+	max-width:280px;
+	min-width:200px;
+	font-size:15px;
+	line-height:12px;
+	direction:ltr;
+	box-shadow:5px 5px 5px #888888;
+	border-style: solid;
+	border-color: #008080;
+
+}
+.htw-action-box-bottom
+{
+	position:absolute;
+	z-index: 9999;
+	margin:-135px -10px 15px;
+	background: #fff;
+	color: #2c3e50;
+	display:inline;
+	max-width:280px;
+	min-width:200px;
+	font-size:15px;
+	line-height:12px;
+	direction:ltr;
+	box-shadow:5px 5px 5px #888888;
+	border-style: solid;
+	border-color: #008080;
+
+}
+
+.htw-action-box-both
+{
+	position:absolute;
+	z-index: 9999;
+	margin:-135px -10px 15px;
+	background: #fff;
+	color: #2c3e50;
+	display:inline;
+	max-width:280px;
+	min-width:200px;
+	font-size:15px;
+	line-height:12px;
+	direction:ltr;
+	box-shadow:5px 5px 5px #888888;
+	border-style: solid;
+	border-color: #008080;
 
 }
 
 .htw-action-message
 {
-	background: #2ecc71;
+	background: #008080;
 	color: #fff;
 	position:relative;
 	overflow:hidden;
@@ -68,6 +123,7 @@
 	word-wrap:break-word;
 	padding-bottom: 30px;
 	margin-top: 5px;
+	padding: 10px;
 	font-weight: bolder;
 
 	
